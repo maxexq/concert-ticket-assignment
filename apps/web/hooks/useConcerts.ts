@@ -15,10 +15,11 @@ export const useConcerts = () => {
   });
 };
 
-export const useConcertsWithStatus = () => {
+export const useConcertsWithStatus = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: concertKeys.withStatus,
     queryFn: concertsService.getAllWithStatus,
+    enabled: options?.enabled ?? true,
   });
 };
 

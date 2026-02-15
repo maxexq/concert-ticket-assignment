@@ -26,11 +26,17 @@ interface ConcertWithReservation extends IConcert {
 
 const Home = () => {
   const { role } = useRole();
-  const { data: concertsData, isLoading, error } = useConcertsWithStatus();
+  const isAdmin = role === "admin";
+
+  const {
+    data: concertsData,
+    isLoading,
+    error,
+  } = useConcertsWithStatus({
+    enabled: !isAdmin,
+  });
   const createReservation = useCreateReservation();
   const cancelReservation = useCancelReservation();
-
-  const isAdmin = role === "admin";
 
   const concerts: ConcertWithReservation[] =
     concertsData?.map((concert) => ({
@@ -59,7 +65,7 @@ const Home = () => {
     });
   };
 
-  if (error) {
+  if (!isAdmin && error) {
     return (
       <MainLayout>
         <div className="text-red-500">Error loading concerts</div>
