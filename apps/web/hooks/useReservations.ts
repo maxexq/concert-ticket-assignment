@@ -12,14 +12,14 @@ export const reservationKeys = {
 export const useReservations = () => {
   return useQuery({
     queryKey: reservationKeys.all,
-    queryFn: reservationsService.getAll,
+    queryFn: () => reservationsService.getAll(),
   });
 };
 
 export const useMyHistory = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: reservationKeys.myHistory,
-    queryFn: reservationsService.getMyHistory,
+    queryFn: () => reservationsService.getMyHistory(),
     enabled: options?.enabled ?? true,
   });
 };
@@ -27,7 +27,7 @@ export const useMyHistory = (options?: { enabled?: boolean }) => {
 export const useHistory = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: reservationKeys.history,
-    queryFn: reservationsService.getHistory,
+    queryFn: () => reservationsService.getHistory(),
     enabled: options?.enabled ?? true,
   });
 };
@@ -35,7 +35,7 @@ export const useHistory = (options?: { enabled?: boolean }) => {
 export const useStats = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: reservationKeys.stats,
-    queryFn: reservationsService.getStats,
+    queryFn: () => reservationsService.getStats(),
     enabled: options?.enabled ?? true,
   });
 };
