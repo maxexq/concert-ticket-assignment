@@ -1,71 +1,42 @@
 "use client";
 
 import { MainLayout } from "@/components/layout";
-import { HistoryTable, IHistoryRecord } from "@/components/molecules";
-
-const mockHistoryData: IHistoryRecord[] = [
-  {
-    id: "1",
-    dateTime: "2024-01-15 14:30:00",
-    username: "john_doe",
-    concertName: "Rock Festival 2024",
-    action: "Reserve",
-  },
-  {
-    id: "2",
-    dateTime: "2024-01-14 10:15:00",
-    username: "jane_smith",
-    concertName: "Jazz Night Live",
-    action: "Reserve",
-  },
-  {
-    id: "3",
-    dateTime: "2024-01-13 18:45:00",
-    username: "mike_wilson",
-    concertName: "Symphony Orchestra",
-    action: "Cancel",
-  },
-  {
-    id: "4",
-    dateTime: "2024-01-12 20:00:00",
-    username: "sarah_johnson",
-    concertName: "Pop Stars Concert",
-    action: "Reserve",
-  },
-  {
-    id: "5",
-    dateTime: "2024-01-11 16:30:00",
-    username: "david_brown",
-    concertName: "Electronic Music Festival",
-    action: "Cancel",
-  },
-  {
-    id: "6",
-    dateTime: "2024-01-10 19:00:00",
-    username: "emily_davis",
-    concertName: "Rock Festival 2024",
-    action: "Reserve",
-  },
-  {
-    id: "7",
-    dateTime: "2024-01-09 21:15:00",
-    username: "chris_taylor",
-    concertName: "Jazz Night Live",
-    action: "Cancel",
-  },
-  {
-    id: "8",
-    dateTime: "2024-01-08 15:45:00",
-    username: "amanda_martinez",
-    concertName: "Symphony Orchestra",
-    action: "Reserve",
-  },
-];
+import {
+  HistoryTable,
+  IHistoryRecord,
+  HistoryAction,
+} from "@/components/molecules";
+import { useMyHistory, useHistory } from "@/hooks";
+import { useRole } from "@/contexts";
 
 const HistoryPage = () => {
+  const { role } = useRole();
+  const isAdmin = role === "admin";
+
+  const { data: myHistoryData, isLoading: isMyHistoryLoading } = useMyHistory();
+  const { data: allHistoryData, isLoading: isAllHistoryLoading } = useHistory();
+
+  const historyData = isAdmin ? allHistoryData : myHistoryData;
+  const isLoading = isAdmin ? isAllHistoryLoading : isMyHistoryLoading;
+
+  const records: IHistoryRecord[] =
+    historyData?.map((record) => ({
+      id: record.id,
+      dateTime: new Date(record.dateTime).toLocaleString(),
+      username: record.username,
+      concertName: record.concertName,
+      action: (record.action === "reserve"
+        ? "Reserve"
+        : "Cancel") as HistoryAction,
+    })) ?? [];
+
   return (
     <MainLayout>
-      <HistoryTable data={mockHistoryData} />
+      {isLoading ? (
+        <div>Loading history...</div>
+      ) : (
+        <HistoryTable data={records} />
+      )}
     </MainLayout>
   );
 };
