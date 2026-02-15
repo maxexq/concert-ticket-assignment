@@ -29,6 +29,12 @@ export class ReservationsController {
     return this.reservationsService.findAll();
   }
 
+  @Get('stats')
+  @Roles(Role.ADMIN)
+  getStats() {
+    return this.reservationsService.getStats();
+  }
+
   @Get('history')
   @Roles(Role.ADMIN)
   getHistory() {

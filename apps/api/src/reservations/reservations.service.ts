@@ -165,5 +165,39 @@ export class ReservationsService {
   private async invalidateHistoryCache(): Promise<void> {
     await this.redisService.del(CACHE_KEYS.HISTORY);
     await this.redisService.del(CACHE_KEYS.HISTORY_USER);
+    await this.redisService.del(CACHE_KEYS.STATS);
+  }
+
+  async getStats(): Promise<{
+    totalSeats: number;
+    reserveCount: number;
+    cancelCount: number;
+  }> {
+    const cached = await this.redisService.get<{
+      totalSeats: number;
+      reserveCount: number;
+      cancelCount: number;
+    }>(CACHE_KEYS.STATS);
+
+    if (cached) {
+      return cached;
+    }
+
+    const concerts = await this.concertsService.findAll();
+    const totalSeats = concerts.reduce((sum, concert) => sum + concert.seat, 0);
+
+    const reserveCount = await this.historyRepository.count({
+      where: { action: ReservationAction.RESERVE },
+    });
+
+    const cancelCount = await this.historyRepository.count({
+      where: { action: ReservationAction.CANCEL },
+    });
+
+    const stats = { totalSeats, reserveCount, cancelCount };
+
+    await this.redisService.set(CACHE_KEYS.STATS, stats, CACHE_TTL.STATS);
+
+    return stats;
   }
 }
