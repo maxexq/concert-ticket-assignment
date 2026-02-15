@@ -2,7 +2,8 @@
 
 import { Home, History, RefreshCw, X, LogOut } from "lucide-react";
 import React from "react";
-import { MenuButton } from "../atoms";
+import { MenuButton, MenuButtonType } from "../atoms";
+import { useRole } from "@/contexts";
 
 interface ISidebarProps {
   isOpen: boolean;
@@ -11,6 +12,9 @@ interface ISidebarProps {
 
 const Sidebar = (props: ISidebarProps) => {
   const { isOpen, onClose } = props;
+  const { role, switchRole } = useRole();
+
+  const isAdmin = role === "admin";
 
   return (
     <>
@@ -40,21 +44,36 @@ const Sidebar = (props: ISidebarProps) => {
         </div>
 
         <nav className="flex flex-col flex-1 min-h-0 py-10 lg:py-10">
-          <h1 className="p-6 text-[40px] font-semibold shrink-0">User</h1>
+          <h1 className="p-6 text-[40px] font-semibold shrink-0">
+            {isAdmin ? "Admin" : "User"}
+          </h1>
           <ul className="flex flex-col gap-2 flex-1 overflow-y-auto">
+            {isAdmin && (
+              <>
+                <li className="p-2">
+                  <MenuButton title="Home" href="/" icon={Home} />
+                </li>
+                <li className="p-2">
+                  <MenuButton title="History" href="/history" icon={History} />
+                </li>
+              </>
+            )}
             <li className="p-2">
-              <MenuButton title="Home" href="/" icon={Home} />
-            </li>
-            <li className="p-2">
-              <MenuButton title="History" href="/history" icon={History} />
-            </li>
-            <li className="p-2">
-              <MenuButton title="Switch to user" icon={RefreshCw} />
+              <MenuButton
+                title={isAdmin ? "Switch to User" : "Switch to Admin"}
+                icon={RefreshCw}
+                type={MenuButtonType.BUTTON}
+                onClick={switchRole}
+              />
             </li>
           </ul>
           <ul className="shrink-0 p-2">
             <li className="p-2">
-              <MenuButton title="Logout" icon={LogOut} />
+              <MenuButton
+                title="Logout"
+                icon={LogOut}
+                type={MenuButtonType.BUTTON}
+              />
             </li>
           </ul>
         </nav>
