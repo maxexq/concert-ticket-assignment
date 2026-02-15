@@ -13,6 +13,8 @@ import {
 } from './entities/reservation-history.entity';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { ConcertsService } from '../concerts/concerts.service';
+import { RedisService } from '../common/services/redis.service';
+import { CACHE_TTL, CACHE_KEYS } from '../common/constants/cache.constants';
 
 @Injectable()
 export class ReservationsService {
@@ -22,6 +24,7 @@ export class ReservationsService {
     @InjectRepository(ReservationHistory)
     private readonly historyRepository: Repository<ReservationHistory>,
     private readonly concertsService: ConcertsService,
+    private readonly redisService: RedisService,
   ) {}
 
   async create(
@@ -58,6 +61,8 @@ export class ReservationsService {
       action: ReservationAction.RESERVE,
     });
 
+    await this.invalidateHistoryCache();
+
     return saved;
   }
 
@@ -85,18 +90,49 @@ export class ReservationsService {
     });
 
     await this.reservationRepository.remove(reservation);
+
+    await this.invalidateHistoryCache();
   }
 
   async getHistory(): Promise<ReservationHistory[]> {
-    return this.historyRepository.find({
+    const cached = await this.redisService.get<ReservationHistory[]>(
+      CACHE_KEYS.HISTORY,
+    );
+    if (cached) {
+      return cached;
+    }
+
+    const history = await this.historyRepository.find({
       order: { dateTime: 'DESC' },
     });
+
+    await this.redisService.set(CACHE_KEYS.HISTORY, history, CACHE_TTL.HISTORY);
+
+    return history;
   }
 
   async getHistoryForUser() {
-    return this.historyRepository.find({
+    const cached = await this.redisService.get(CACHE_KEYS.HISTORY_USER);
+    if (cached) {
+      return cached;
+    }
+
+    const history = await this.historyRepository.find({
       select: ['id', 'concertName', 'action', 'dateTime'],
       order: { dateTime: 'DESC' },
     });
+
+    await this.redisService.set(
+      CACHE_KEYS.HISTORY_USER,
+      history,
+      CACHE_TTL.HISTORY,
+    );
+
+    return history;
+  }
+
+  private async invalidateHistoryCache(): Promise<void> {
+    await this.redisService.del(CACHE_KEYS.HISTORY);
+    await this.redisService.del(CACHE_KEYS.HISTORY_USER);
   }
 }
