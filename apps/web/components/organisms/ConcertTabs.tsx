@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Tabs, Tab, Box } from "@mui/material";
 import ConcertCard from "../molecules/ConcertCard";
+import ConcertOverview, { IConcert } from "./ConcertOverview";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -26,13 +27,14 @@ const TabPanel = (props: TabPanelProps) => {
   );
 };
 
-const mockConcerts = [
+export const mockConcerts: IConcert[] = [
   {
     id: "1",
     name: "Rock Festival 2024",
     description:
       "Experience the ultimate rock festival featuring legendary bands and emerging artists. Join thousands of fans for an unforgettable night of music, energy, and pure rock and roll.",
     seats: 5000,
+    status: "reserve",
   },
   {
     id: "2",
@@ -40,6 +42,7 @@ const mockConcerts = [
     description:
       "An evening of smooth jazz with world-renowned musicians. Enjoy classic jazz standards and contemporary compositions in an intimate setting.",
     seats: 800,
+    status: "reserve",
   },
   {
     id: "3",
@@ -47,6 +50,7 @@ const mockConcerts = [
     description:
       "The National Symphony Orchestra presents a breathtaking performance of classical masterpieces by Mozart, Beethoven, and Tchaikovsky.",
     seats: 2000,
+    status: "reserve",
   },
   {
     id: "4",
@@ -54,6 +58,7 @@ const mockConcerts = [
     description:
       "The biggest pop stars come together for one spectacular night. Featuring chart-topping hits and stunning visual performances.",
     seats: 10000,
+    status: "reserve",
   },
   {
     id: "5",
@@ -61,6 +66,7 @@ const mockConcerts = [
     description:
       "Immerse yourself in the world of electronic music with top DJs from around the globe. State-of-the-art sound systems and visual effects await.",
     seats: 15000,
+    status: "cancel",
   },
 ];
 
@@ -73,6 +79,17 @@ const ConcertTabs = () => {
 
   const handleReserve = (id: string) => {
     console.log("Reserve concert:", id);
+  };
+
+  const handleDelete = (id: string) => {
+    console.log("Delete concert:", id);
+  };
+
+  const handleSave = (
+    id: string,
+    data: { name: string; description: string; seats: number },
+  ) => {
+    console.log("Save concert:", id, data);
   };
 
   const handleCreate = (data: {
@@ -121,19 +138,13 @@ const ConcertTabs = () => {
       </Box>
 
       <TabPanel value={tabValue} index={0}>
-        <div className="flex flex-col gap-6">
-          {mockConcerts.map((concert) => (
-            <ConcertCard
-              key={concert.id}
-              id={concert.id}
-              name={concert.name}
-              description={concert.description}
-              seats={concert.seats}
-              type="reserve"
-              onReserve={handleReserve}
-            />
-          ))}
-        </div>
+        <ConcertOverview
+          cardType="delete"
+          concerts={mockConcerts}
+          onReserve={handleReserve}
+          onDelete={handleDelete}
+          onSave={handleSave}
+        />
       </TabPanel>
 
       <TabPanel value={tabValue} index={1}>
