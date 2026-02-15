@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "../atoms";
+import { Button, Input } from "../atoms";
 import { Divider } from "@mui/material";
 import { User, Pencil, Trash2, X, Save } from "lucide-react";
 
@@ -124,48 +124,59 @@ const ConcertCard = (props: IConcertCardProps) => {
   return (
     <div className="flex flex-col justify-center p-10 rounded-lg border border-[#C2C2C2] w-full gap-8">
       <div className="flex flex-col gap-6">
-        {isEditing ? (
-          <input
-            type="text"
-            value={editData.name}
-            onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-            className="text-[40px] font-semibold text-[#1692EC] border border-[#C2C2C2] rounded-md px-2 py-1 outline-none focus:border-[#1692EC]"
-          />
-        ) : (
-          <h2 className="text-[40px] font-semibold text-[#1692EC]">{name}</h2>
-        )}
+        <h2 className="text-[40px] font-semibold text-[#1692EC]">
+          {isEditing ? "Create" : name}
+        </h2>
         <Divider orientation="horizontal" className="border-[#C2C2C2]!" />
         {isEditing ? (
-          <textarea
-            value={editData.description}
-            onChange={(e) =>
-              setEditData({ ...editData, description: e.target.value })
-            }
-            className="text-2xl font-normal border border-[#C2C2C2] rounded-md px-2 py-1 outline-none focus:border-[#1692EC] min-h-[100px]"
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Input
+              label="Concert Name"
+              type="text"
+              value={editData.name}
+              onChange={(value) =>
+                setEditData({ ...editData, name: String(value) })
+              }
+              placeholder="Please input concert name"
+            />
+            <Input
+              label="Total of seat"
+              type="number"
+              value={editData.seats}
+              onChange={(value) =>
+                setEditData({ ...editData, seats: Number(value) })
+              }
+              placeholder="Please input total of seats"
+              postIcon={User}
+            />
+            <Input
+              label="Description"
+              type="textarea"
+              value={editData.description}
+              onChange={(value) =>
+                setEditData({ ...editData, description: String(value) })
+              }
+              placeholder="Please input description"
+              className="col-span-1 md:col-span-2"
+              rows={4}
+            />
+          </div>
         ) : (
-          <p className="text-2xl font-normal">{description}</p>
+          <>
+            <p className="text-2xl font-normal">{description}</p>
+          </>
         )}
       </div>
       <div className="flex justify-between items-center">
-        <div className="text-xl font-semibold inline-flex gap-1 items-center">
-          <User className="w-8 h-8" />
-          {isEditing ? (
-            <input
-              type="number"
-              value={editData.seats}
-              onChange={(e) =>
-                setEditData({ ...editData, seats: Number(e.target.value) })
-              }
-              className="text-2xl font-normal border border-[#C2C2C2] rounded-md px-2 py-1 w-32 outline-none focus:border-[#1692EC]"
-            />
-          ) : (
+        {!isEditing && (
+          <div className="text-xl font-semibold inline-flex gap-1 items-center">
+            <User className="w-8 h-8" />
             <span className="text-2xl font-normal">
               {seats.toLocaleString()}
             </span>
-          )}
-        </div>
-        {renderActions()}
+          </div>
+        )}
+        <div className={isEditing ? "ml-auto" : ""}>{renderActions()}</div>
       </div>
     </div>
   );
