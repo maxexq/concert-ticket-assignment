@@ -7,6 +7,7 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
+import { useRouter } from "next/navigation";
 
 export type UserRole = "user" | "admin";
 
@@ -25,6 +26,7 @@ interface RoleProviderProps {
 
 export const RoleProvider = ({ children }: RoleProviderProps) => {
   const [role, setRole] = useState<UserRole>("admin");
+  const router = useRouter();
 
   useEffect(() => {
     const storedRole = localStorage.getItem(
@@ -41,6 +43,7 @@ export const RoleProvider = ({ children }: RoleProviderProps) => {
       localStorage.setItem(ROLE_STORAGE_KEY, newRole);
       return newRole;
     });
+    router.push("/");
   };
 
   return (
