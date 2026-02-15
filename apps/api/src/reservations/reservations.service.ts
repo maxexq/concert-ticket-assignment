@@ -30,11 +30,7 @@ export class ReservationsService {
       createReservationDto.concertId,
     );
 
-    const reservationCount = await this.reservationRepository.countBy({
-      concertId: concert.id,
-    });
-
-    if (reservationCount >= concert.seat) {
+    if (concert.seat <= 0) {
       throw new BadRequestException('No seats available for this concert');
     }
 
@@ -43,6 +39,8 @@ export class ReservationsService {
     });
 
     const saved = await this.reservationRepository.save(reservation);
+
+    await this.concertsService.decrementSeat(concert.id);
 
     await this.historyRepository.save({
       concertName: concert.name,
@@ -67,6 +65,8 @@ export class ReservationsService {
     if (!reservation) {
       throw new NotFoundException('Reservation not found');
     }
+
+    await this.concertsService.incrementSeat(reservation.concertId);
 
     await this.historyRepository.save({
       concertName: reservation.concert.name,

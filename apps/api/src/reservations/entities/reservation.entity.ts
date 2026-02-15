@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   CreateDateColumn,
+  JoinColumn,
 } from 'typeorm';
 import { Concert } from '../../concerts/entities/concert.entity';
 
@@ -12,11 +13,12 @@ export class Reservation {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Concert, { onDelete: 'CASCADE' })
-  concert: Concert;
-
   @Column()
   concertId: string;
+
+  @ManyToOne(() => Concert, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'concertId' })
+  concert: Concert;
 
   @CreateDateColumn()
   createdAt: Date;

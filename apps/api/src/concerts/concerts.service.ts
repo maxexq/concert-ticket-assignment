@@ -46,4 +46,12 @@ export class ConcertsService {
     const concert = await this.findOne(id);
     await this.concertRepository.remove(concert);
   }
+
+  async decrementSeat(id: string): Promise<void> {
+    await this.concertRepository.decrement({ id }, 'seat', 1);
+  }
+
+  async incrementSeat(id: string): Promise<void> {
+    await this.concertRepository.increment({ id }, 'seat', 1);
+  }
 }
