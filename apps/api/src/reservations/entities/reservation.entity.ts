@@ -5,6 +5,7 @@ import {
   ManyToOne,
   CreateDateColumn,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { Concert } from '../../concerts/entities/concert.entity';
 
@@ -13,9 +14,11 @@ export class Reservation {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Index()
   @Column({ default: 'Sara John' })
   username: string;
 
+  @Index()
   @Column()
   concertId: string;
 
@@ -23,6 +26,7 @@ export class Reservation {
   @JoinColumn({ name: 'concertId' })
   concert: Concert;
 
+  @Index()
   @CreateDateColumn()
   createdAt: Date;
 }
