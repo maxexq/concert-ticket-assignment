@@ -15,17 +15,19 @@ export const useReservations = () => {
   });
 };
 
-export const useMyHistory = () => {
+export const useMyHistory = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: reservationKeys.myHistory,
     queryFn: reservationsService.getMyHistory,
+    enabled: options?.enabled ?? true,
   });
 };
 
-export const useHistory = () => {
+export const useHistory = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: reservationKeys.history,
     queryFn: reservationsService.getHistory,
+    enabled: options?.enabled ?? true,
   });
 };
 

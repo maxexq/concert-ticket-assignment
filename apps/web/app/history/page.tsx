@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { MainLayout } from "@/components/layout";
 import {
   HistoryTable,
@@ -13,11 +14,28 @@ const HistoryPage = () => {
   const { role } = useRole();
   const isAdmin = role === "admin";
 
-  const { data: myHistoryData, isLoading: isMyHistoryLoading } = useMyHistory();
-  const { data: allHistoryData, isLoading: isAllHistoryLoading } = useHistory();
+  const {
+    data: myHistoryData,
+    isLoading: isMyHistoryLoading,
+    refetch: refetchMyHistory,
+  } = useMyHistory({ enabled: !isAdmin });
+
+  const {
+    data: allHistoryData,
+    isLoading: isAllHistoryLoading,
+    refetch: refetchAllHistory,
+  } = useHistory({ enabled: isAdmin });
 
   const historyData = isAdmin ? allHistoryData : myHistoryData;
   const isLoading = isAdmin ? isAllHistoryLoading : isMyHistoryLoading;
+
+  React.useEffect(() => {
+    if (isAdmin) {
+      refetchAllHistory();
+    } else {
+      refetchMyHistory();
+    }
+  }, [isAdmin, refetchAllHistory, refetchMyHistory]);
 
   const records: IHistoryRecord[] =
     historyData?.map((record) => ({
