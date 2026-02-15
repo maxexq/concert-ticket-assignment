@@ -1,3 +1,4 @@
+import { ROLE_STORAGE_KEY } from "@/contexts/RoleContext";
 import axios from "axios";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
@@ -12,7 +13,7 @@ export const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     if (typeof window !== "undefined") {
-      const role = localStorage.getItem("role");
+      const role = localStorage.getItem(ROLE_STORAGE_KEY);
       if (role) {
         config.headers["x-role"] = role;
       }
