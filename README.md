@@ -1,136 +1,290 @@
-# Turborepo starter
+# Free Concert Tickets Reservation System Assignment
 
-This Turborepo starter is maintained by the Turborepo core team.
+A full-stack monorepo application for managing free concert tickets reservations. Built with NestJS (API) and Next.js (Web) using Turborepo for monorepo management.
 
-## Using this example
+## Table of Contents
 
-Run the following command:
+- [Architecture Overview](#architecture-overview)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Setup & Configuration](#setup--configuration)
+- [Running the Application](#running-the-application)
+- [Running Unit Tests](#running-unit-tests)
+- [API Endpoints](#api-endpoints)
+- [Libraries & Packages](#libraries--packages)
 
-```sh
-npx create-turbo@latest
-```
-
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+## Architecture Overview
 
 ```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+┌─────────────────────────────────────────────────────────────────┐
+│                         Client (Browser)                         │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    Next.js Frontend (Web)                        │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
+│  │   React     │  │ React Query │  │     Role Context        │  │
+│  │ Components  │  │  (Caching)  │  │  (Admin/User Switch)    │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────────┘  │
+│                          │                                       │
+│                    Axios Instance                                │
+│                   (x-role header)                                │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     NestJS Backend (API)                         │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
+│  │ Controllers │  │   Guards    │  │       Services          │  │
+│  │             │◄─┤ (RolesGuard)│◄─┤  (Business Logic)       │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────────┘  │
+│                                              │                   │
+│                          ┌───────────────────┼───────────────┐   │
+│                          ▼                   ▼               │   │
+│                   ┌─────────────┐     ┌─────────────┐        │   │
+│                   │    Redis    │     │  PostgreSQL │        │   │
+│                   │   (Cache)   │     │    (Data)   │        │   │
+│                   └─────────────┘     └─────────────┘        │   │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### Design Patterns
+
+- **Monorepo Architecture**: Uses Turborepo for managing multiple apps
+- **Role-Based Access Control**: Header-based role switching (admin/user) with guard protection
+- **Repository Pattern**: TypeORM repositories for database operations
+- **Caching Strategy**: Redis caching with TTL for frequently accessed data
+- **Pessimistic Locking**: Prevents race conditions during concurrent reservations
+- **React Query**: Client-side caching and state management for API data
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | Next.js 16, React 19, TypeScript |
+| Backend | NestJS 11, TypeScript |
+| Database | PostgreSQL 16 |
+| Cache | Redis |
+| Monorepo | Turborepo |
+| Styling | Tailwind CSS, MUI |
+
+## Project Structure
 
 ```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+concert-ticket-mono/
+├── apps/
+│   ├── api/                    # NestJS Backend
+│   │   ├── src/
+│   │   │   ├── common/         # Guards, decorators, services
+│   │   │   ├── concerts/       # Concert module (CRUD)
+│   │   │   └── reservations/   # Reservation module
+│   │   ├── docker-compose.yml  # PostgreSQL & Redis
+│   │   └── package.json
+│   │
+│   └── web/                    # Next.js Frontend
+│       ├── app/                # App router pages
+│       ├── components/         # React components
+│       ├── contexts/           # React contexts (Role)
+│       ├── hooks/              # React Query hooks
+│       ├── lib/                # API services, utilities
+│       └── package.json
+│
+├── package.json                # Root package.json
+└── turbo.json                  # Turborepo configuration
 ```
 
-### Develop
+## Setup & Configuration
 
-To develop all apps and packages, run the following command:
+### Prerequisites
 
-```
-cd my-turborepo
+- Node.js >= 18
+- npm >= 9
+- Docker & Docker Compose (for PostgreSQL and Redis)
 
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+### 1. Clone and Install Dependencies
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+```bash
+git clone <repository-url>
+cd concert-ticket-mono
+npm install
 ```
 
-### Remote Caching
+### 2. Start Database Services
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+Navigate to the API directory and start PostgreSQL and Redis:
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+```bash
+cd apps/api
+docker-compose up -d
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+This will start:
+- PostgreSQL on port `5432`
+- Redis on port `6379`
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+### 3. Configure Environment Variables
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
+Create a `.env` file in `apps/api/`:
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+```bash
+cp apps/api/.env.example apps/api/.env
 ```
 
-## Useful Links
+Update the values in `.env`:
 
-Learn more about the power of Turborepo:
+```env
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_USERNAME=postgres
+DATABASE_PASSWORD=postgres
+DATABASE_NAME=free_concert_tickets
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
-# concert-ticket-assignment
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+CORS_ORIGIN=http://localhost:5172
+```
+
+### 4. (Optional) Configure Frontend Environment
+
+Create a `.env.local` file in `apps/web/` if you need to customize the API URL:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5172
+```
+
+## Running the Application
+
+### Development Mode
+
+From the root directory:
+
+```bash
+# Run both API and Web concurrently
+npm run dev
+
+# Run API only (port 3000)
+npm run dev:api
+
+# Run Web only (port 5172)
+npm run dev:web
+```
+
+## Running Unit Tests
+
+### Run All Tests
+
+```bash
+npm run test
+```
+
+### API Tests
+
+```bash
+# Run all API tests
+npm run test:api
+
+# Run tests in watch mode
+npm run test:api:watch
+
+# Run tests with coverage report
+npm run test:api:cov
+```
+
+### Test Structure
+
+The API tests are located in `apps/api/src/` alongside their respective modules:
+
+```
+apps/api/src/
+├── concerts/
+│   ├── concerts.service.spec.ts      # 12 tests
+│   └── concerts.controller.spec.ts   # 5 tests
+└── reservations/
+    ├── reservations.service.spec.ts  # 13 tests
+    └── reservations.controller.spec.ts # 6 tests
+```
+
+**Total: 36 unit tests**
+
+### Test Coverage
+
+Tests cover:
+- Concert CRUD operations
+- Reservation creation with pessimistic locking
+- Reservation cancellation
+- Cache hit/miss scenarios
+- Error handling (NotFoundException, ConflictException, BadRequestException)
+- Role-based access control
+
+## API Endpoints
+
+### Concerts
+
+| Method | Endpoint | Role | Description |
+|--------|----------|------|-------------|
+| GET | `/concerts` | Admin | Get all concerts |
+| GET | `/concerts/with-status` | User | Get concerts with reservation status |
+| GET | `/concerts/:id` | All | Get concert by ID |
+| POST | `/concerts` | Admin | Create a new concert |
+| DELETE | `/concerts/:id` | Admin | Delete a concert |
+
+### Reservations
+
+| Method | Endpoint | Role | Description |
+|--------|----------|------|-------------|
+| GET | `/reservations` | Admin | Get all reservations |
+| GET | `/reservations/stats` | Admin | Get reservation statistics |
+| GET | `/reservations/history` | Admin | Get all reservation history |
+| GET | `/reservations/my-history` | User | Get user's reservation history |
+| POST | `/reservations` | User | Create a reservation |
+| DELETE | `/reservations/:id` | User | Cancel a reservation |
+
+## Libraries & Packages
+
+### Backend (API)
+
+| Package | Version | Role |
+|---------|---------|------|
+| `@nestjs/core` | ^11.0.1 | Core NestJS framework |
+| `@nestjs/config` | ^4.0.3 | Environment configuration |
+| `@nestjs/typeorm` | ^11.0.0 | TypeORM integration for database |
+| `typeorm` | ^0.3.28 | ORM for PostgreSQL |
+| `pg` | ^8.18.0 | PostgreSQL driver |
+| `ioredis` | ^5.9.3 | Redis client |
+| `@nestjs-modules/ioredis` | ^2.0.2 | NestJS Redis module |
+| `class-validator` | ^0.14.3 | DTO validation |
+| `class-transformer` | ^0.5.1 | Object transformation |
+| `jest` | ^30.0.0 | Testing framework |
+
+### Frontend (Web)
+
+| Package | Version | Role |
+|---------|---------|------|
+| `next` | 16.1.5 | React framework with App Router |
+| `react` | ^19.2.0 | UI library |
+| `@tanstack/react-query` | ^5.90.21 | Server state management & caching |
+| `@tanstack/react-table` | ^8.21.3 | Table component for history |
+| `axios` | ^1.13.5 | HTTP client |
+| `@mui/material` | ^7.3.8 | Material UI components |
+| `@emotion/react` | ^11.14.0 | CSS-in-JS for MUI |
+| `tailwindcss` | ^4.1.18 | Utility-first CSS |
+| `react-hook-form` | ^7.71.1 | Form handling |
+| `react-toastify` | ^11.0.5 | Toast notifications |
+| `lucide-react` | ^0.564.0 | Icons |
+
+## Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Run all apps in development |
+| `npm run dev:api` | Run API only |
+| `npm run dev:web` | Run Web only |
+| `npm run build` | Build all apps |
+| `npm run test` | Run all tests |
+| `npm run test:api` | Run API tests |
+| `npm run test:api:cov` | Run API tests with coverage |
+| `npm run lint` | Lint all apps |
+| `npm run format` | Format code with Prettier |
+| `npm run check-types` | Type check all apps |
