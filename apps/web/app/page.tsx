@@ -1,10 +1,8 @@
 import { MainLayout } from "@/components/layout";
-import { TestToastButton } from "@/components";
 import { StatsGroup } from "@/components/molecules";
 import { IStatCardProps } from "@/components/atoms/StatCard";
-import { Award, Save, Trash2, User, XCircle } from "lucide-react";
-import Button from "@/components/atoms/Button";
-import ConcertCard from "@/components/molecules/ConcertCard";
+import { Award, User, XCircle } from "lucide-react";
+import ConcertTabs from "@/components/organisms/ConcertTabs";
 
 const Stats: IStatCardProps[] = [
   { icon: User, title: "Total of seats", value: "500", bgColor: "#0070A4" },
@@ -18,40 +16,7 @@ const Home = () => {
       <div className="flex items-center justify-center gap-8.75">
         <StatsGroup stats={Stats} />
       </div>
-      <TestToastButton />
-      <Button title="Delete" icon={Trash2} variant="danger" size="lg" />
-      <Button title="Save" icon={Save} variant="primary" size="lg" />
-      <Button title="Cancel" variant="warning" size="lg" />
-      <Button title="Reserve" variant="primary" size="lg" />
-
-      <ConcertCard
-        id="test"
-        name="Concert Name "
-        description="Lorem ipsum dolor sit amet consectetur. Elit purus nam gravida porttitor nibh urna sit ornare a. Proin dolor morbi id ornare aenean non. Fusce dignissim turpis sed non est orci sed in. Blandit ut purus nunc sed donec commodo morbi diam scelerisque."
-        seats={2000}
-      />
-      <ConcertCard
-        id="test"
-        name="Concert Name"
-        description="Lorem ipsum dolor sit amet consectetur. Elit purus nam gravida porttitor nibh urna sit ornare a. Proin dolor morbi id ornare aenean non. Fusce dignissim turpis sed non est orci sed in. Blandit ut purus nunc sed donec commodo morbi diam scelerisque."
-        seats={2000}
-        type="cancel"
-      />
-      <ConcertCard
-        id="test"
-        name="Concert Name"
-        description="Lorem ipsum dolor sit amet consectetur. Elit purus nam gravida porttitor nibh urna sit ornare a. Proin dolor morbi id ornare aenean non. Fusce dignissim turpis sed non est orci sed in. Blandit ut purus nunc sed donec commodo morbi diam scelerisque."
-        seats={2000}
-        type="cancel"
-      />
-      <ConcertCard
-        id="test"
-        name="Concert Name"
-        description="Lorem ipsum dolor sit amet consectetur. Elit purus nam gravida porttitor nibh urna sit ornare a. Proin dolor morbi id ornare aenean non. Fusce dignissim turpis sed non est orci sed in. Blandit ut purus nunc sed donec commodo morbi diam scelerisque."
-        seats={2000}
-        type="edit"
-      />
-      <ConcertCard type="create" />
+      <ConcertTabs />
     </MainLayout>
   );
 };
