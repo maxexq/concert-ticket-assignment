@@ -69,7 +69,7 @@ const ConcertTabs = () => {
   const handleDeleteConfirm = () => {
     deleteConcert.mutate(deleteModal.concertId, {
       onSuccess: () => {
-        notify.success("Deleted successfully");
+        notify.success("Delete successfully");
         setDeleteModal({ open: false, concertId: "", concertName: "" });
       },
       onError: handleMutationError,
