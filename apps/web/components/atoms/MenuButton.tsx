@@ -54,7 +54,7 @@ const MenuButton = (props: IMenuButtonProps) => {
 
     case MenuButtonType.BUTTON:
       return (
-        <button type="button" className={baseStyles} onClick={onClick}>
+        <button type="button" className={`${baseStyles} cursor-pointer`} onClick={onClick}>
           {content}
         </button>
       );
