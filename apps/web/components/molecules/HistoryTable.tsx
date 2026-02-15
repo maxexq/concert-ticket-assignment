@@ -39,6 +39,7 @@ const tableStyles = `
     border-left: 1px solid #5B5B5B;
     padding: 10px 12px;
     text-align: left;
+    min-width: 180px;
   }
 
   .history-table th:last-child,
@@ -117,7 +118,7 @@ const HistoryTable = (props: IHistoryTableProps) => {
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id}>
+                <th key={header.id} className="text-xl font-semibold">
                   {header.isPlaceholder
                     ? null
                     : flexRender(

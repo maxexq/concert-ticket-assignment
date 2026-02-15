@@ -98,7 +98,7 @@ const ConfirmModal = (props: IConfirmModalProps) => {
               size="md"
               onClick={onConfirm}
               style={{
-                backgroundColor: "#E63946 ",
+                backgroundColor: "#E63946",
                 color: "#FFFFFF",
               }}
             />
