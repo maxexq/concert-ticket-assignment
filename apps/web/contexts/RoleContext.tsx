@@ -1,8 +1,10 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 export type UserRole = "user" | "admin";
+
+const ROLE_STORAGE_KEY = "user_role";
 
 interface RoleContextType {
   role: UserRole;
@@ -18,8 +20,19 @@ interface RoleProviderProps {
 export const RoleProvider = ({ children }: RoleProviderProps) => {
   const [role, setRole] = useState<UserRole>("admin");
 
+  useEffect(() => {
+    const storedRole = localStorage.getItem(ROLE_STORAGE_KEY) as UserRole | null;
+    if (storedRole && (storedRole === "admin" || storedRole === "user")) {
+      setRole(storedRole);
+    }
+  }, []);
+
   const switchRole = () => {
-    setRole((prev) => (prev === "admin" ? "user" : "admin"));
+    setRole((prev) => {
+      const newRole = prev === "admin" ? "user" : "admin";
+      localStorage.setItem(ROLE_STORAGE_KEY, newRole);
+      return newRole;
+    });
   };
 
   return (
