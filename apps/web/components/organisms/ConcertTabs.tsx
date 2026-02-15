@@ -100,11 +100,19 @@ const ConcertTabs = () => {
 
   const handleDeleteConfirm = () => {
     console.log("Delete concert confirmed:", deleteModal.concertId);
-    setDeleteModal({ open: false, concertId: "", concertName: "" });
+    setDeleteModal({
+      open: false,
+      concertId: "",
+      concertName: deleteModal.concertName,
+    });
   };
 
   const handleDeleteCancel = () => {
-    setDeleteModal({ open: false, concertId: "", concertName: "" });
+    setDeleteModal({
+      open: false,
+      concertId: "",
+      concertName: deleteModal.concertName,
+    });
   };
 
   const handleSave = (

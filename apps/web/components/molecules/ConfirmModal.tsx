@@ -21,8 +21,11 @@ interface IConfirmModalProps {
   onConfirm: () => void;
 }
 
-const modalConfig: Record<ModalType, { icon: LucideIcon; color: string; variant: ButtonVariant }> = {
-  danger: { icon: X, color: "#E84E4E", variant: "danger" },
+const modalConfig: Record<
+  ModalType,
+  { icon: LucideIcon; color: string; variant: ButtonVariant }
+> = {
+  danger: { icon: X, color: "#E63946", variant: "danger" },
   success: { icon: Check, color: "#16A34A", variant: "success" },
   warning: { icon: AlertTriangle, color: "#EAB308", variant: "warning" },
   info: { icon: Info, color: "#1692EC", variant: "info" },
@@ -52,16 +55,19 @@ const ConfirmModal = (props: IConfirmModalProps) => {
     <Dialog
       open={open}
       onClose={onClose}
-      PaperProps={{
-        sx: {
-          borderRadius: "8px",
-          padding: "24px",
-          minWidth: "320px",
+      slotProps={{
+        paper: {
+          sx: {
+            borderRadius: "8px",
+            padding: "24px",
+            minWidth: "320px",
+            border: "1px solid #E9E9E9",
+          },
         },
       }}
     >
       <DialogContent sx={{ padding: 0, textAlign: "center" }}>
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-6">
           <div
             className="flex items-center justify-center w-12 h-12 rounded-full"
             style={{ backgroundColor: bgColor }}
@@ -69,14 +75,12 @@ const ConfirmModal = (props: IConfirmModalProps) => {
             <IconComponent className="w-6 h-6 text-white" />
           </div>
 
-          <div className="flex flex-col gap-1">
-            <p className="text-lg font-normal">{title}</p>
-            {message && (
-              <p className="text-lg font-semibold">&quot;{message}&quot;</p>
-            )}
+          <div className="flex flex-col font-bold">
+            <p className="text-xl">{title}</p>
+            {message && <p className="text-lg ">&quot;{message}&quot;</p>}
           </div>
 
-          <div className="flex gap-3 mt-2">
+          <div className="flex gap-4 ">
             <Button
               title={cancelText}
               variant="info"
@@ -84,8 +88,8 @@ const ConfirmModal = (props: IConfirmModalProps) => {
               onClick={onClose}
               style={{
                 backgroundColor: "transparent",
-                border: "1px solid #C2C2C2",
-                color: "#5C5C5C",
+                border: "1px solid #C4C4C4",
+                color: "#262626",
               }}
             />
             <Button
@@ -93,6 +97,10 @@ const ConfirmModal = (props: IConfirmModalProps) => {
               variant={buttonVariant}
               size="md"
               onClick={onConfirm}
+              style={{
+                backgroundColor: "#E63946 ",
+                color: "#FFFFFF",
+              }}
             />
           </div>
         </div>
