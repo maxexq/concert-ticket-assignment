@@ -50,7 +50,7 @@ export const RoleProvider = ({ children }: RoleProviderProps) => {
   };
 
   return (
-    <RoleContext.Provider value={{ role, switchRole }}>
+    <RoleContext.Provider value={{ role, isLoading, switchRole }}>
       {children}
     </RoleContext.Provider>
   );

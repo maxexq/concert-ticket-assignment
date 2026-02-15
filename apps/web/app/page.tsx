@@ -25,7 +25,7 @@ interface ConcertWithReservation extends IConcert {
 }
 
 const Home = () => {
-  const { role } = useRole();
+  const { role, isLoading: roleLoading } = useRole();
   const isAdmin = role === "admin";
 
   const {
@@ -33,7 +33,7 @@ const Home = () => {
     isLoading,
     error,
   } = useConcertsWithStatus({
-    enabled: !isAdmin,
+    enabled: !isAdmin && !roleLoading,
   });
   const createReservation = useCreateReservation();
   const cancelReservation = useCancelReservation();
@@ -69,6 +69,14 @@ const Home = () => {
     return (
       <MainLayout>
         <div className="text-red-500">Error loading concerts</div>
+      </MainLayout>
+    );
+  }
+
+  if (roleLoading) {
+    return (
+      <MainLayout>
+        <div>Loading...</div>
       </MainLayout>
     );
   }
