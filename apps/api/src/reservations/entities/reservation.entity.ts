@@ -13,6 +13,9 @@ export class Reservation {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ default: 'Sara John' })
+  username: string;
+
   @Column()
   concertId: string;
 

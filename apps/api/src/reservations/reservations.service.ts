@@ -81,4 +81,11 @@ export class ReservationsService {
       order: { dateTime: 'DESC' },
     });
   }
+
+  async getHistoryForUser() {
+    return this.historyRepository.find({
+      select: ['id', 'concertName', 'action', 'dateTime'],
+      order: { dateTime: 'DESC' },
+    });
+  }
 }

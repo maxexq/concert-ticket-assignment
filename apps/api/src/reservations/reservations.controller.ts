@@ -35,6 +35,12 @@ export class ReservationsController {
     return this.reservationsService.getHistory();
   }
 
+  @Get('my-history')
+  @Roles(Role.USER)
+  getMyHistory() {
+    return this.reservationsService.getHistoryForUser();
+  }
+
   @Delete(':id')
   @Roles(Role.USER)
   cancel(@Param('id', ParseUUIDPipe) id: string) {
