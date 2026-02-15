@@ -1,7 +1,8 @@
 "use client";
 
-import { X } from "lucide-react";
+import { Home, History, RefreshCw, X } from "lucide-react";
 import React from "react";
+import MenuButton from "../atoms/MenuButton";
 
 interface ISidebarProps {
   isOpen: boolean;
@@ -41,29 +42,14 @@ const Sidebar = (props: ISidebarProps) => {
         <nav className="py-10">
           <h1 className="p-6 text-[40px] font-semibold">User</h1>
           <ul className="flex flex-col gap-2">
-            <li>
-              <a
-                href="#"
-                className="block px-4 py-2 rounded-md hover:bg-gray-100 transition-colors"
-              >
-                Home
-              </a>
+            <li className="p-2">
+              <MenuButton title="Home" href="/" icon={Home} />
             </li>
-            <li>
-              <a
-                href="#"
-                className="block px-4 py-2 rounded-md hover:bg-gray-100 transition-colors"
-              >
-                History
-              </a>
+            <li className="p-2">
+              <MenuButton title="History" href="/history" icon={History} />
             </li>
-            <li>
-              <a
-                href="#"
-                className="block px-4 py-2 rounded-md hover:bg-gray-100 transition-colors"
-              >
-                Switch to user
-              </a>
+            <li className="p-2">
+              <MenuButton title="Switch to user" icon={RefreshCw} />
             </li>
           </ul>
         </nav>
