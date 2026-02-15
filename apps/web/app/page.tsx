@@ -1,5 +1,6 @@
 import Image, { type ImageProps } from "next/image";
 import { Button } from "@repo/ui/button";
+import { TestToastButton } from "@/components/TestToastButton";
 import styles from "./page.module.css";
 import { Lock, Mailbox } from "lucide-react";
 
@@ -67,6 +68,7 @@ export default function Home() {
         <Button appName="web" className={styles.secondary}>
           Open alert
         </Button>
+        <TestToastButton />
       </main>
       <footer className={styles.footer}>
         <a
