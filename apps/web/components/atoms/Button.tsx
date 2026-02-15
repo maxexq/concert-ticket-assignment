@@ -20,7 +20,7 @@ export interface IButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEleme
 
 const variantStyles: Record<ButtonVariant, { bg: string; text: string }> = {
   primary: { bg: "#1692EC", text: "#FFFFFF" },
-  success: { bg: "#D0E7D2", text: "#FFFFFF" },
+  success: { bg: "#16A34A", text: "#FFFFFF" },
   danger: { bg: "#E84E4E", text: "#FFFFFF" },
   warning: { bg: "#F96464", text: "#FFFFFF" },
   info: { bg: "#1692EC", text: "#FFFFFF" },

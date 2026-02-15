@@ -5,6 +5,8 @@ import { Tabs, Tab, Box } from "@mui/material";
 import ConcertCard from "../molecules/ConcertCard";
 import { ConfirmModal } from "../molecules";
 import ConcertOverview, { IConcert } from "./ConcertOverview";
+import { useConcerts, useCreateConcert, useDeleteConcert } from "@/hooks";
+import { notify } from "@/lib";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -28,49 +30,6 @@ const TabPanel = (props: TabPanelProps) => {
   );
 };
 
-export const mockConcerts: IConcert[] = [
-  {
-    id: "1",
-    name: "Rock Festival 2024",
-    description:
-      "Experience the ultimate rock festival featuring legendary bands and emerging artists. Join thousands of fans for an unforgettable night of music, energy, and pure rock and roll.",
-    seats: 5000,
-    status: "reserve",
-  },
-  {
-    id: "2",
-    name: "Jazz Night Live",
-    description:
-      "An evening of smooth jazz with world-renowned musicians. Enjoy classic jazz standards and contemporary compositions in an intimate setting.",
-    seats: 800,
-    status: "reserve",
-  },
-  {
-    id: "3",
-    name: "Symphony Orchestra",
-    description:
-      "The National Symphony Orchestra presents a breathtaking performance of classical masterpieces by Mozart, Beethoven, and Tchaikovsky.",
-    seats: 2000,
-    status: "reserve",
-  },
-  {
-    id: "4",
-    name: "Pop Stars Concert",
-    description:
-      "The biggest pop stars come together for one spectacular night. Featuring chart-topping hits and stunning visual performances.",
-    seats: 10000,
-    status: "reserve",
-  },
-  {
-    id: "5",
-    name: "Electronic Music Festival",
-    description:
-      "Immerse yourself in the world of electronic music with top DJs from around the globe. State-of-the-art sound systems and visual effects await.",
-    seats: 15000,
-    status: "cancel",
-  },
-];
-
 const ConcertTabs = () => {
   const [tabValue, setTabValue] = useState(0);
   const [deleteModal, setDeleteModal] = useState<{
@@ -79,16 +38,25 @@ const ConcertTabs = () => {
     concertName: string;
   }>({ open: false, concertId: "", concertName: "" });
 
+  const { data: concertsData, isLoading } = useConcerts();
+  const createConcert = useCreateConcert();
+  const deleteConcert = useDeleteConcert();
+
+  const concerts: IConcert[] =
+    concertsData?.map((concert) => ({
+      id: concert.id,
+      name: concert.name,
+      description: concert.description,
+      seats: concert.seat,
+      status: "delete" as const,
+    })) ?? [];
+
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
-  const handleReserve = (id: string) => {
-    console.log("Reserve concert:", id);
-  };
-
   const handleDeleteClick = (id: string) => {
-    const concert = mockConcerts.find((c) => c.id === id);
+    const concert = concerts.find((c) => c.id === id);
     if (concert) {
       setDeleteModal({
         open: true,
@@ -99,27 +67,17 @@ const ConcertTabs = () => {
   };
 
   const handleDeleteConfirm = () => {
-    console.log("Delete concert confirmed:", deleteModal.concertId);
-    setDeleteModal({
-      open: false,
-      concertId: "",
-      concertName: deleteModal.concertName,
+    deleteConcert.mutate(deleteModal.concertId, {
+      onSuccess: () => {
+        notify.success("Delete successfully");
+        setDeleteModal({ open: false, concertId: "", concertName: "" });
+      },
+      onError: (err) => notify.error(err.message),
     });
   };
 
   const handleDeleteCancel = () => {
-    setDeleteModal({
-      open: false,
-      concertId: "",
-      concertName: deleteModal.concertName,
-    });
-  };
-
-  const handleSave = (
-    id: string,
-    data: { name: string; description: string; seats: number },
-  ) => {
-    console.log("Save concert:", id, data);
+    setDeleteModal({ open: false, concertId: "", concertName: "" });
   };
 
   const handleCreate = (data: {
@@ -127,7 +85,16 @@ const ConcertTabs = () => {
     description: string;
     seats: number;
   }) => {
-    console.log("Create concert:", data);
+    createConcert.mutate(
+      { name: data.name, description: data.description, seat: data.seats },
+      {
+        onSuccess: () => {
+          notify.success("Create successfully");
+          setTabValue(0);
+        },
+        onError: (err) => notify.error(err.message),
+      },
+    );
   };
 
   return (
@@ -168,13 +135,15 @@ const ConcertTabs = () => {
       </Box>
 
       <TabPanel value={tabValue} index={0}>
-        <ConcertOverview
-          cardType="delete"
-          concerts={mockConcerts}
-          onReserve={handleReserve}
-          onDelete={handleDeleteClick}
-          onSave={handleSave}
-        />
+        {isLoading ? (
+          <div>Loading concerts...</div>
+        ) : (
+          <ConcertOverview
+            cardType="delete"
+            concerts={concerts}
+            onDelete={handleDeleteClick}
+          />
+        )}
       </TabPanel>
 
       <TabPanel value={tabValue} index={1}>

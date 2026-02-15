@@ -8,13 +8,14 @@ import "react-toastify/dist/ReactToastify.css";
 const toastStyles = `
   .Toastify__toast {
     border-radius: 8px;
-    padding: 12px 16px;
+    padding: 12px 40px 12px 16px;
     font-size: 16px;
     font-weight: 400;
     min-height: auto;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
+    position: relative;
   }
 
   .Toastify__toast-body {
@@ -34,9 +35,12 @@ const toastStyles = `
   .Toastify__close-button {
     color: #5C5C5C;
     opacity: 1;
-    align-self: center;
-    margin-left: auto;
-    padding-left: 12px;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0;
+    cursor: pointer;
   }
 
   .Toastify__close-button > svg {

@@ -1,13 +1,21 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { useRouter } from "next/navigation";
 
 export type UserRole = "user" | "admin";
 
-const ROLE_STORAGE_KEY = "user_role";
+export const ROLE_STORAGE_KEY = "user_role";
 
 interface RoleContextType {
   role: UserRole;
+  isLoading: boolean;
   switchRole: () => void;
 }
 
@@ -18,13 +26,18 @@ interface RoleProviderProps {
 }
 
 export const RoleProvider = ({ children }: RoleProviderProps) => {
-  const [role, setRole] = useState<UserRole>("admin");
+  const [role, setRole] = useState<UserRole>("user");
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
-    const storedRole = localStorage.getItem(ROLE_STORAGE_KEY) as UserRole | null;
+    const storedRole = localStorage.getItem(
+      ROLE_STORAGE_KEY,
+    ) as UserRole | null;
     if (storedRole && (storedRole === "admin" || storedRole === "user")) {
       setRole(storedRole);
     }
+    setIsLoading(false);
   }, []);
 
   const switchRole = () => {
@@ -33,10 +46,11 @@ export const RoleProvider = ({ children }: RoleProviderProps) => {
       localStorage.setItem(ROLE_STORAGE_KEY, newRole);
       return newRole;
     });
+    router.push("/");
   };
 
   return (
-    <RoleContext.Provider value={{ role, switchRole }}>
+    <RoleContext.Provider value={{ role, isLoading, switchRole }}>
       {children}
     </RoleContext.Provider>
   );
