@@ -8,8 +8,9 @@ export interface Concert {
 }
 
 export interface ConcertWithStatus extends Concert {
-  availableSeats: number;
-  isReserved: boolean;
+  canReserve: boolean;
+  canCancel: boolean;
+  reservationId: string | null;
 }
 
 export interface Reservation {
