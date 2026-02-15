@@ -80,7 +80,7 @@ const Home = () => {
     if (!concert?.reservationId) return;
 
     cancelReservation.mutate(concert.reservationId, {
-      onSuccess: () => notify.success("Cancelled successfully"),
+      onSuccess: () => notify.success("Cancell successfully"),
       onError: (err) => notify.error(err.message),
     });
   };
