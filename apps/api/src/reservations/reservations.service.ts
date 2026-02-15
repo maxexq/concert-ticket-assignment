@@ -5,12 +5,13 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Reservation } from './entities/reservation.entity';
 import {
   ReservationHistory,
   ReservationAction,
 } from './entities/reservation-history.entity';
+import { Concert } from '../concerts/entities/concert.entity';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { ConcertsService } from '../concerts/concerts.service';
 import { RedisService } from '../common/services/redis.service';
@@ -25,45 +26,60 @@ export class ReservationsService {
     private readonly historyRepository: Repository<ReservationHistory>,
     private readonly concertsService: ConcertsService,
     private readonly redisService: RedisService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(
     createReservationDto: CreateReservationDto,
   ): Promise<Reservation> {
-    const concert = await this.concertsService.findOne(
-      createReservationDto.concertId,
-    );
+    return this.dataSource.transaction(async (manager) => {
+      const concert = await manager.findOne(Concert, {
+        where: { id: createReservationDto.concertId },
+        lock: { mode: 'pessimistic_write' },
+      });
 
-    const existingReservation = await this.reservationRepository.findOneBy({
-      concertId: concert.id,
-    });
+      if (!concert) {
+        throw new NotFoundException(
+          `Concert with ID ${createReservationDto.concertId} not found`,
+        );
+      }
 
-    if (existingReservation) {
-      throw new ConflictException(
-        'You already have a reservation for this concert',
+      const existingReservation = await manager.findOneBy(Reservation, {
+        concertId: concert.id,
+      });
+
+      if (existingReservation) {
+        throw new ConflictException(
+          'You already have a reservation for this concert',
+        );
+      }
+
+      if (concert.seat <= 0) {
+        throw new BadRequestException('No seats available for this concert');
+      }
+
+      concert.seat -= 1;
+      await manager.save(concert);
+
+      const reservation = manager.create(Reservation, {
+        concertId: concert.id,
+      });
+      const saved = await manager.save(reservation);
+
+      await manager.save(ReservationHistory, {
+        concertName: concert.name,
+        action: ReservationAction.RESERVE,
+      });
+
+      await this.invalidateHistoryCache();
+      await this.concertsService.invalidateCache();
+
+      console.log(
+        `Reservation created for concert ${concert.name}, seats remaining: ${concert.seat}`,
       );
-    }
 
-    if (concert.seat <= 0) {
-      throw new BadRequestException('No seats available for this concert');
-    }
-
-    const reservation = this.reservationRepository.create({
-      concertId: concert.id,
+      return saved;
     });
-
-    const saved = await this.reservationRepository.save(reservation);
-
-    await this.concertsService.decrementSeat(concert.id);
-
-    await this.historyRepository.save({
-      concertName: concert.name,
-      action: ReservationAction.RESERVE,
-    });
-
-    await this.invalidateHistoryCache();
-
-    return saved;
   }
 
   async findAll(): Promise<Reservation[]> {
@@ -73,25 +89,40 @@ export class ReservationsService {
   }
 
   async cancel(reservationId: string): Promise<void> {
-    const reservation = await this.reservationRepository.findOne({
-      where: { id: reservationId },
-      relations: ['concert'],
+    await this.dataSource.transaction(async (manager) => {
+      const reservation = await manager.findOne(Reservation, {
+        where: { id: reservationId },
+        relations: ['concert'],
+      });
+
+      if (!reservation) {
+        throw new NotFoundException('Reservation not found');
+      }
+
+      const concert = await manager.findOne(Concert, {
+        where: { id: reservation.concertId },
+        lock: { mode: 'pessimistic_write' },
+      });
+
+      if (!concert) {
+        throw new NotFoundException('Concert not found');
+      }
+
+      concert.seat += 1;
+      await manager.save(concert);
+
+      await manager.save(ReservationHistory, {
+        concertName: concert.name,
+        action: ReservationAction.CANCEL,
+      });
+
+      await manager.remove(reservation);
+
+      await this.invalidateHistoryCache();
+      await this.concertsService.invalidateCache();
+
+      console.log(`Reservation cancelled for concert ${concert.name}`);
     });
-
-    if (!reservation) {
-      throw new NotFoundException('Reservation not found');
-    }
-
-    await this.concertsService.incrementSeat(reservation.concertId);
-
-    await this.historyRepository.save({
-      concertName: reservation.concert.name,
-      action: ReservationAction.CANCEL,
-    });
-
-    await this.reservationRepository.remove(reservation);
-
-    await this.invalidateHistoryCache();
   }
 
   async getHistory(): Promise<ReservationHistory[]> {
