@@ -15,6 +15,7 @@ export const ROLE_STORAGE_KEY = "user_role";
 
 interface RoleContextType {
   role: UserRole;
+  isLoading: boolean;
   switchRole: () => void;
 }
 
@@ -25,7 +26,8 @@ interface RoleProviderProps {
 }
 
 export const RoleProvider = ({ children }: RoleProviderProps) => {
-  const [role, setRole] = useState<UserRole>("admin");
+  const [role, setRole] = useState<UserRole>("user");
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -35,6 +37,7 @@ export const RoleProvider = ({ children }: RoleProviderProps) => {
     if (storedRole && (storedRole === "admin" || storedRole === "user")) {
       setRole(storedRole);
     }
+    setIsLoading(false);
   }, []);
 
   const switchRole = () => {
