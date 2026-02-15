@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Tabs, Tab, Box } from "@mui/material";
 import ConcertCard from "../molecules/ConcertCard";
+import { ConfirmModal } from "../molecules";
 import ConcertOverview, { IConcert } from "./ConcertOverview";
 
 interface TabPanelProps {
@@ -72,6 +73,11 @@ export const mockConcerts: IConcert[] = [
 
 const ConcertTabs = () => {
   const [tabValue, setTabValue] = useState(0);
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    concertId: string;
+    concertName: string;
+  }>({ open: false, concertId: "", concertName: "" });
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -81,8 +87,24 @@ const ConcertTabs = () => {
     console.log("Reserve concert:", id);
   };
 
-  const handleDelete = (id: string) => {
-    console.log("Delete concert:", id);
+  const handleDeleteClick = (id: string) => {
+    const concert = mockConcerts.find((c) => c.id === id);
+    if (concert) {
+      setDeleteModal({
+        open: true,
+        concertId: id,
+        concertName: concert.name,
+      });
+    }
+  };
+
+  const handleDeleteConfirm = () => {
+    console.log("Delete concert confirmed:", deleteModal.concertId);
+    setDeleteModal({ open: false, concertId: "", concertName: "" });
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModal({ open: false, concertId: "", concertName: "" });
   };
 
   const handleSave = (
@@ -142,7 +164,7 @@ const ConcertTabs = () => {
           cardType="delete"
           concerts={mockConcerts}
           onReserve={handleReserve}
-          onDelete={handleDelete}
+          onDelete={handleDeleteClick}
           onSave={handleSave}
         />
       </TabPanel>
@@ -150,6 +172,17 @@ const ConcertTabs = () => {
       <TabPanel value={tabValue} index={1}>
         <ConcertCard type="create" onCreate={handleCreate} />
       </TabPanel>
+
+      <ConfirmModal
+        open={deleteModal.open}
+        type="danger"
+        title="Are you sure to delete?"
+        message={deleteModal.concertName}
+        cancelText="Cancel"
+        confirmText="Yes, Delete"
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+      />
     </Box>
   );
 };
