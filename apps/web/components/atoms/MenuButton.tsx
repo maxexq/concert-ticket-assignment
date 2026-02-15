@@ -1,5 +1,8 @@
+"use client";
+
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
 
 export enum MenuButtonType {
@@ -25,8 +28,8 @@ const MenuButton = (props: IMenuButtonProps) => {
     onClick,
   } = props;
 
-  const currentPath = window.location.pathname;
-  const isActive = currentPath === href;
+  const pathname = usePathname();
+  const isActive = pathname === href;
 
   const baseStyles = `
     flex items-center gap-2.5 w-full px-2 py-4 rounded-md
