@@ -7,6 +7,7 @@ import { Award, User, XCircle } from "lucide-react";
 import ConcertTabs from "@/components/organisms/ConcertTabs";
 import { useRole } from "@/contexts";
 import { ConcertOverview, IConcert } from "@/components/organisms";
+import { notify } from "@/lib";
 
 const Stats: IStatCardProps[] = [
   { icon: User, title: "Total of seats", value: "500", bgColor: "#0070A4" },
@@ -70,7 +71,10 @@ const Home = () => {
           <ConcertTabs />
         </>
       ) : (
-        <ConcertOverview concerts={mockConcerts} />
+        <ConcertOverview
+          concerts={mockConcerts}
+          onReserve={() => notify.info("Success reserve from user")}
+        />
       )}
     </MainLayout>
   );

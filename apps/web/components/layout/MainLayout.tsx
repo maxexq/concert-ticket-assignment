@@ -27,7 +27,7 @@ const MainLayout = (props: IMainLayoutProps) => {
           </button>
           <span className="font-semibold">Concert Tickets</span>
         </div>
-        <div className="flex flex-col gap-12 px-10 py-16 flex-1 overflow-y-auto">
+        <div className="flex flex-col gap-12 px-5 py-8   md:px-10 md:py-16 flex-1 overflow-y-auto">
           {children}
         </div>
       </main>

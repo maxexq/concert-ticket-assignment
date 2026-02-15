@@ -51,6 +51,10 @@ const ConcertCard = (props: IConcertCardProps) => {
   const isCreateMode = type === "create";
   const showForm = isEditing || isCreateMode;
 
+  const baseStyles = `
+    flex flex-col justify-center p-8 md:p-10 rounded-lg border border-[#C2C2C2] w-full gap-8
+    `;
+
   const {
     register,
     handleSubmit,
@@ -64,7 +68,7 @@ const ConcertCard = (props: IConcertCardProps) => {
     if (isCreateMode) {
       alert(JSON.stringify(data, null, 2));
       onCreate?.(data);
-      toast.success("Concert created successfully!");
+      toast.success("Create successfully!");
       reset({ name: "", description: "", seats: 0 });
     } else {
       onSave?.(id, data);
@@ -81,7 +85,12 @@ const ConcertCard = (props: IConcertCardProps) => {
     switch (type) {
       case "reserve":
         return (
-          <Button title="Reserve" size="lg" onClick={() => onReserve?.(id)} />
+          <Button
+            title="Reserve"
+            size="lg"
+            onClick={() => onReserve?.(id)}
+            className="w-full md:w-auto"
+          />
         );
 
       case "cancel":
@@ -91,6 +100,7 @@ const ConcertCard = (props: IConcertCardProps) => {
             size="lg"
             variant="danger"
             onClick={() => onCancel?.(id)}
+            className="w-full md:w-auto"
           />
         );
 
@@ -102,6 +112,7 @@ const ConcertCard = (props: IConcertCardProps) => {
             variant="danger"
             icon={Trash2}
             onClick={() => onDelete?.(id)}
+            className="w-full md:w-auto"
           />
         );
 
@@ -209,7 +220,7 @@ const ConcertCard = (props: IConcertCardProps) => {
           </>
         )}
       </div>
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-8">
         {!showForm && (
           <div className="text-xl font-semibold inline-flex gap-1 items-center">
             <User className="w-8 h-8" />
@@ -218,27 +229,22 @@ const ConcertCard = (props: IConcertCardProps) => {
             </span>
           </div>
         )}
-        <div className={showForm ? "ml-auto" : ""}>{renderActions()}</div>
+        <div className={`${showForm ? "ml-auto" : ""} w-full md:w-auto`}>
+          {renderActions()}
+        </div>
       </div>
     </>
   );
 
   if (showForm) {
     return (
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col justify-center p-10 rounded-lg border border-[#C2C2C2] w-full gap-8"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className={baseStyles}>
         {cardContent}
       </form>
     );
   }
 
-  return (
-    <div className="flex flex-col justify-center p-10 rounded-lg border border-[#C2C2C2] w-full gap-8">
-      {cardContent}
-    </div>
-  );
+  return <div className={baseStyles}>{cardContent}</div>;
 };
 
 export default React.memo(ConcertCard);
