@@ -6,6 +6,7 @@ export const reservationKeys = {
   all: ["reservations"] as const,
   myHistory: ["reservations", "my-history"] as const,
   history: ["reservations", "history"] as const,
+  stats: ["reservations", "stats"] as const,
 };
 
 export const useReservations = () => {
@@ -27,6 +28,14 @@ export const useHistory = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: reservationKeys.history,
     queryFn: reservationsService.getHistory,
+    enabled: options?.enabled ?? true,
+  });
+};
+
+export const useStats = (options?: { enabled?: boolean }) => {
+  return useQuery({
+    queryKey: reservationKeys.stats,
+    queryFn: reservationsService.getStats,
     enabled: options?.enabled ?? true,
   });
 };

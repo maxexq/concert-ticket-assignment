@@ -35,6 +35,12 @@ export interface CreateConcertDto {
   seat: number;
 }
 
+export interface Stats {
+  totalSeats: number;
+  reserveCount: number;
+  cancelCount: number;
+}
+
 export interface CreateReservationDto {
   concertId: string;
 }

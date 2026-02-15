@@ -12,13 +12,8 @@ import {
   useConcertsWithStatus,
   useCreateReservation,
   useCancelReservation,
+  useStats,
 } from "@/hooks";
-
-const Stats: IStatCardProps[] = [
-  { icon: User, title: "Total of seats", value: "500", bgColor: "#0070A4" },
-  { icon: Award, title: "Reserve", value: "50", bgColor: "#00A58B" },
-  { icon: XCircle, title: "Cancel", value: "20", bgColor: "#F96464" },
-];
 
 interface ConcertWithReservation extends IConcert {
   reservationId: string | null;
@@ -27,6 +22,10 @@ interface ConcertWithReservation extends IConcert {
 const Home = () => {
   const { role, isLoading: roleLoading } = useRole();
   const isAdmin = role === "admin";
+
+  const { data: statsData } = useStats({
+    enabled: isAdmin && !roleLoading,
+  });
 
   const {
     data: concertsData,
@@ -37,6 +36,27 @@ const Home = () => {
   });
   const createReservation = useCreateReservation();
   const cancelReservation = useCancelReservation();
+
+  const stats: IStatCardProps[] = [
+    {
+      icon: User,
+      title: "Total of seats",
+      value: statsData?.totalSeats?.toLocaleString() ?? "0",
+      bgColor: "#0070A4",
+    },
+    {
+      icon: Award,
+      title: "Reserve",
+      value: statsData?.reserveCount?.toLocaleString() ?? "0",
+      bgColor: "#00A58B",
+    },
+    {
+      icon: XCircle,
+      title: "Cancel",
+      value: statsData?.cancelCount?.toLocaleString() ?? "0",
+      bgColor: "#F96464",
+    },
+  ];
 
   const concerts: ConcertWithReservation[] =
     concertsData?.map((concert) => ({
@@ -85,7 +105,7 @@ const Home = () => {
     <MainLayout>
       {isAdmin ? (
         <>
-          <StatsGroup stats={Stats} />
+          <StatsGroup stats={stats} />
           <ConcertTabs />
         </>
       ) : isLoading ? (
