@@ -1,7 +1,9 @@
 "use client";
 
-import { X } from "lucide-react";
+import { Home, History, RefreshCw, X, LogOut } from "lucide-react";
 import React from "react";
+import { MenuButton, MenuButtonType } from "../atoms";
+import { useRole } from "@/contexts";
 
 interface ISidebarProps {
   isOpen: boolean;
@@ -10,6 +12,9 @@ interface ISidebarProps {
 
 const Sidebar = (props: ISidebarProps) => {
   const { isOpen, onClose } = props;
+  const { role, switchRole } = useRole();
+
+  const isAdmin = role === "admin";
 
   return (
     <>
@@ -22,13 +27,13 @@ const Sidebar = (props: ISidebarProps) => {
 
       <aside
         className={`
-          fixed top-0 left-0 z-50 h-screen w-60 bg-white border-r border-gray-200
-          transform transition-transform duration-300 ease-in-out
+          fixed top-0 left-0 z-50 h-screen w-60 bg-white border-r border-[#E7E7E7]
+          transform transition-transform duration-300 ease-in-out flex flex-col
           lg:translate-x-0 lg:static lg:z-auto
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
-        <div className="flex items-center justify-between p-4 lg:hidden">
+        <div className="flex items-center justify-between p-4 lg:hidden shrink-0">
           <span className="font-semibold">Menu</span>
           <button
             onClick={onClose}
@@ -38,32 +43,35 @@ const Sidebar = (props: ISidebarProps) => {
           </button>
         </div>
 
-        <nav className="py-10">
-          <h1 className="p-6 text-[40px] font-semibold">User</h1>
-          <ul className="flex flex-col gap-2">
-            <li>
-              <a
-                href="#"
-                className="block px-4 py-2 rounded-md hover:bg-gray-100 transition-colors"
-              >
-                Home
-              </a>
+        <nav className="flex flex-col flex-1 min-h-0 py-10 lg:py-10">
+          <h1 className="p-6 text-[40px] font-semibold shrink-0">
+            {isAdmin ? "Admin" : "User"}
+          </h1>
+          <ul className="flex flex-col gap-2 flex-1 overflow-y-auto">
+            {isAdmin && (
+              <li className="p-2">
+                <MenuButton title="Home" href="/" icon={Home} />
+              </li>
+            )}
+            <li className="p-2">
+              <MenuButton title="History" href="/history" icon={History} />
             </li>
-            <li>
-              <a
-                href="#"
-                className="block px-4 py-2 rounded-md hover:bg-gray-100 transition-colors"
-              >
-                History
-              </a>
+            <li className="p-2">
+              <MenuButton
+                title={isAdmin ? "Switch to User" : "Switch to Admin"}
+                icon={RefreshCw}
+                type={MenuButtonType.BUTTON}
+                onClick={switchRole}
+              />
             </li>
-            <li>
-              <a
-                href="#"
-                className="block px-4 py-2 rounded-md hover:bg-gray-100 transition-colors"
-              >
-                Switch to user
-              </a>
+          </ul>
+          <ul className="shrink-0 p-2">
+            <li className="p-2">
+              <MenuButton
+                title="Logout"
+                icon={LogOut}
+                type={MenuButtonType.BUTTON}
+              />
             </li>
           </ul>
         </nav>

@@ -14,11 +14,11 @@ const MainLayout = (props: IMainLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen overflow-hidden">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="flex-1">
-        <div className="sticky top-0 z-30 flex items-center gap-4 p-4 bg-white border-b border-gray-200 lg:hidden">
+      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+        <div className="sticky top-0 z-30 flex items-center gap-4 p-4 bg-white border-b border-gray-200 lg:hidden shrink-0">
           <button
             onClick={() => setSidebarOpen(true)}
             className="p-2 rounded-md hover:bg-gray-100"
@@ -27,7 +27,9 @@ const MainLayout = (props: IMainLayoutProps) => {
           </button>
           <span className="font-semibold">Concert Tickets</span>
         </div>
-        <div className="flex flex-col gap-4 h-full px-10 py-16">{children}</div>
+        <div className="flex flex-col gap-12 px-5 py-8   md:px-10 md:py-16 flex-1 overflow-y-auto">
+          {children}
+        </div>
       </main>
     </div>
   );
