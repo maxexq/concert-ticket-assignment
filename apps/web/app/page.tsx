@@ -51,6 +51,7 @@ const Home = () => {
         seats={2000}
         type="edit"
       />
+      <ConcertCard type="create" />
     </MainLayout>
   );
 };
