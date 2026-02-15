@@ -1,8 +1,9 @@
 "use client";
 
+import React from "react";
 import { notify } from "@/lib/notify";
 
-export function TestToastButton() {
+const TestToastButton = () => {
   return (
     <button
       onClick={() => notify.success("This is a success notification!")}
@@ -19,4 +20,6 @@ export function TestToastButton() {
       Test Success Toast
     </button>
   );
-}
+};
+
+export default React.memo(TestToastButton);
