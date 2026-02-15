@@ -6,7 +6,7 @@ import ConcertCard from "../molecules/ConcertCard";
 import { ConfirmModal } from "../molecules";
 import ConcertOverview, { IConcert } from "./ConcertOverview";
 import { useConcerts, useCreateConcert, useDeleteConcert } from "@/hooks";
-import { notify } from "@/lib";
+import { notify, handleMutationError } from "@/lib";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -69,10 +69,10 @@ const ConcertTabs = () => {
   const handleDeleteConfirm = () => {
     deleteConcert.mutate(deleteModal.concertId, {
       onSuccess: () => {
-        notify.success("Delete successfully");
+        notify.success("Deleted successfully");
         setDeleteModal({ open: false, concertId: "", concertName: "" });
       },
-      onError: (err) => notify.error(err.message),
+      onError: handleMutationError,
     });
   };
 
@@ -92,7 +92,7 @@ const ConcertTabs = () => {
           notify.success("Create successfully");
           setTabValue(0);
         },
-        onError: (err) => notify.error(err.message),
+        onError: handleMutationError,
       },
     );
   };

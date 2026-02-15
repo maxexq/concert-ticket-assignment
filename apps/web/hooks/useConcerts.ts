@@ -11,14 +11,14 @@ export const concertKeys = {
 export const useConcerts = () => {
   return useQuery({
     queryKey: concertKeys.all,
-    queryFn: concertsService.getAll,
+    queryFn: () => concertsService.getAll(),
   });
 };
 
 export const useConcertsWithStatus = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: concertKeys.withStatus,
-    queryFn: concertsService.getAllWithStatus,
+    queryFn: () => concertsService.getAllWithStatus(),
     enabled: options?.enabled ?? true,
   });
 };

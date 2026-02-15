@@ -7,7 +7,7 @@ import { Award, User, XCircle } from "lucide-react";
 import ConcertTabs from "@/components/organisms/ConcertTabs";
 import { useRole } from "@/contexts";
 import { ConcertOverview, IConcert } from "@/components/organisms";
-import { notify } from "@/lib";
+import { notify, handleMutationError } from "@/lib";
 import {
   useConcertsWithStatus,
   useCreateReservation,
@@ -71,7 +71,7 @@ const Home = () => {
   const handleReserve = (id: string) => {
     createReservation.mutate(id, {
       onSuccess: () => notify.success("Reserved successfully"),
-      onError: (err) => notify.error(err.message),
+      onError: handleMutationError,
     });
   };
 
@@ -80,8 +80,8 @@ const Home = () => {
     if (!concert?.reservationId) return;
 
     cancelReservation.mutate(concert.reservationId, {
-      onSuccess: () => notify.success("Cancell successfully"),
-      onError: (err) => notify.error(err.message),
+      onSuccess: () => notify.success("Cancel successfully"),
+      onError: handleMutationError,
     });
   };
 

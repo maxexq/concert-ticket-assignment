@@ -1,5 +1,6 @@
 import { ROLE_STORAGE_KEY } from "@/contexts/RoleContext";
 import axios from "axios";
+import { parseApiError, ApiError } from "./error";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
@@ -26,9 +27,8 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const message =
-      error.response?.data?.message || error.message || "An error occurred";
-    return Promise.reject(new Error(message));
+    const parsed = parseApiError(error);
+    return Promise.reject(new ApiError(parsed));
   },
 );
 
