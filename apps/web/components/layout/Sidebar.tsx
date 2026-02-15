@@ -49,15 +49,13 @@ const Sidebar = (props: ISidebarProps) => {
           </h1>
           <ul className="flex flex-col gap-2 flex-1 overflow-y-auto">
             {isAdmin && (
-              <>
-                <li className="p-2">
-                  <MenuButton title="Home" href="/" icon={Home} />
-                </li>
-                <li className="p-2">
-                  <MenuButton title="History" href="/history" icon={History} />
-                </li>
-              </>
+              <li className="p-2">
+                <MenuButton title="Home" href="/" icon={Home} />
+              </li>
             )}
+            <li className="p-2">
+              <MenuButton title="History" href="/history" icon={History} />
+            </li>
             <li className="p-2">
               <MenuButton
                 title={isAdmin ? "Switch to User" : "Switch to Admin"}
