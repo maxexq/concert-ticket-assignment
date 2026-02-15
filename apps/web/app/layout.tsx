@@ -22,9 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={roboto.className}>
-        <RoleProvider>
-          {children}
-        </RoleProvider>
+        <RoleProvider>{children}</RoleProvider>
         <ToastProvider />
       </body>
     </html>
