@@ -11,10 +11,19 @@
     "check-types": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^7.3.8",
     "@repo/ui": "*",
+    "@tailwindcss/postcss": "^4.1.18",
+    "@tanstack/react-table": "^8.21.3",
+    "lucide-react": "^0.564.0",
     "next": "16.1.5",
+    "postcss": "^8.4.31",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-toastify": "^11.0.5",
+    "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
