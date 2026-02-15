@@ -28,6 +28,13 @@ export class ConcertsController {
     return this.concertsService.findAll();
   }
 
+  @Get('with-status')
+  @UseGuards(RolesGuard)
+  @Roles(Role.USER)
+  findAllWithStatus() {
+    return this.concertsService.findAllWithStatus();
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     console.log('findOne called with id:', id);

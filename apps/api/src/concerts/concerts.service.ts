@@ -6,13 +6,22 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Concert } from './entities/concert.entity';
+import { Reservation } from '../reservations/entities/reservation.entity';
 import { CreateConcertDto } from './dto/create-concert.dto';
+
+export interface ConcertWithStatus extends Concert {
+  canReserve: boolean;
+  canCancel: boolean;
+  reservationId: string | null;
+}
 
 @Injectable()
 export class ConcertsService {
   constructor(
     @InjectRepository(Concert)
     private readonly concertRepository: Repository<Concert>,
+    @InjectRepository(Reservation)
+    private readonly reservationRepository: Repository<Reservation>,
   ) {}
 
   async create(createConcertDto: CreateConcertDto): Promise<Concert> {
@@ -53,5 +62,26 @@ export class ConcertsService {
 
   async incrementSeat(id: string): Promise<void> {
     await this.concertRepository.increment({ id }, 'seat', 1);
+  }
+
+  async findAllWithStatus(): Promise<ConcertWithStatus[]> {
+    const concerts = await this.concertRepository.find();
+    const reservations = await this.reservationRepository.find();
+
+    const reservationMap = new Map(
+      reservations.map((r) => [r.concertId, r.id]),
+    );
+
+    return concerts.map((concert) => {
+      const reservationId = reservationMap.get(concert.id) || null;
+      const hasReservation = !!reservationId;
+
+      return {
+        ...concert,
+        canReserve: !hasReservation && concert.seat > 0,
+        canCancel: hasReservation,
+        reservationId,
+      };
+    });
   }
 }

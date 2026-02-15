@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -29,6 +30,16 @@ export class ReservationsService {
     const concert = await this.concertsService.findOne(
       createReservationDto.concertId,
     );
+
+    const existingReservation = await this.reservationRepository.findOneBy({
+      concertId: concert.id,
+    });
+
+    if (existingReservation) {
+      throw new ConflictException(
+        'You already have a reservation for this concert',
+      );
+    }
 
     if (concert.seat <= 0) {
       throw new BadRequestException('No seats available for this concert');

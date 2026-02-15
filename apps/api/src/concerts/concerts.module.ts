@@ -3,9 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConcertsController } from './concerts.controller';
 import { ConcertsService } from './concerts.service';
 import { Concert } from './entities/concert.entity';
+import { Reservation } from '../reservations/entities/reservation.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Concert])],
+  imports: [TypeOrmModule.forFeature([Concert, Reservation])],
   controllers: [ConcertsController],
   providers: [ConcertsService],
   exports: [ConcertsService],
