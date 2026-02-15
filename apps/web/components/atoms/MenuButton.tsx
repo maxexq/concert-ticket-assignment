@@ -13,7 +13,6 @@ export interface IMenuButtonProps {
   href?: string;
   icon?: LucideIcon;
   type?: MenuButtonType;
-  isActive?: boolean;
   onClick?: () => void;
 }
 
@@ -23,9 +22,11 @@ const MenuButton = (props: IMenuButtonProps) => {
     href = "#",
     icon: Icon,
     type = MenuButtonType.LINK,
-    isActive = false,
     onClick,
   } = props;
+
+  const currentPath = window.location.pathname;
+  const isActive = currentPath === href;
 
   const baseStyles = `
     flex items-center gap-2.5 w-full px-2 py-4 rounded-md
