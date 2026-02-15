@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
 import { Button, Input } from "../atoms";
 import { Divider } from "@mui/material";
 import { User, Pencil, Trash2, X, Save } from "lucide-react";
@@ -66,9 +65,7 @@ const ConcertCard = (props: IConcertCardProps) => {
 
   const onSubmit = (data: IConcertFormData) => {
     if (isCreateMode) {
-      alert(JSON.stringify(data, null, 2));
       onCreate?.(data);
-      toast.success("Create successfully!");
       reset({ name: "", description: "", seats: 0 });
     } else {
       onSave?.(id, data);
@@ -130,7 +127,7 @@ const ConcertCard = (props: IConcertCardProps) => {
               <Button
                 title="Save"
                 size="lg"
-                variant="success"
+                variant="primary"
                 icon={Save}
                 type="submit"
               />
@@ -161,7 +158,7 @@ const ConcertCard = (props: IConcertCardProps) => {
           <Button
             title="Save"
             size="lg"
-            variant="success"
+            variant="primary"
             icon={Save}
             type="submit"
           />
