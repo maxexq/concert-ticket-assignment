@@ -14,10 +14,8 @@ export const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     if (typeof window !== "undefined") {
-      const role = localStorage.getItem(ROLE_STORAGE_KEY);
-      if (role) {
-        config.headers["x-role"] = role;
-      }
+      const role = localStorage.getItem(ROLE_STORAGE_KEY) || "admin";
+      config.headers["x-role"] = role;
     }
     return config;
   },
