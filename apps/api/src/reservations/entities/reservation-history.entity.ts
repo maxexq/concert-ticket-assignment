@@ -31,6 +31,6 @@ export class ReservationHistory {
   action: ReservationAction;
 
   @Index()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   dateTime: Date;
 }

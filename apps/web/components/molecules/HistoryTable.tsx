@@ -9,6 +9,7 @@ import {
   ColumnDef,
 } from "@tanstack/react-table";
 import dayjs from "dayjs";
+import "dayjs/locale/th";
 import { useRole } from "@/contexts";
 
 export type HistoryAction = "Reserve" | "Cancel";
@@ -28,7 +29,8 @@ interface IHistoryTableProps {
 const columnHelper = createColumnHelper<IHistoryRecord>();
 
 const formatDateTime = (dateString: string): string => {
-  return dayjs(dateString).format("DD/MM/YYYY HH:mm:ss");
+  const d = dayjs(dateString).locale("th");
+  return d.isValid() ? d.format("DD/MM/YYYY HH:mm:ss") : "—";
 };
 
 const tableStyles = `

@@ -40,7 +40,7 @@ const HistoryPage = () => {
   const records: IHistoryRecord[] =
     historyData?.map((record) => ({
       id: record.id,
-      dateTime: new Date(record.dateTime).toLocaleString(),
+      dateTime: record.dateTime,
       username: record.username,
       concertName: record.concertName,
       action: (record.action === "reserve"
