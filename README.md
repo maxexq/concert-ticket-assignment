@@ -49,6 +49,9 @@ A full-stack monorepo application for managing free concert tickets reservations
 └─────────────────────────────────────────────────────────────────┘
 ```
 
+<img width="404" height="1133" alt="image" src="https://github.com/user-attachments/assets/9fac4aab-8109-4cee-a097-154bf2a0e603" />
+
+
 ### Design Patterns
 
 - **Monorepo Architecture**: Uses Turborepo for managing multiple apps
