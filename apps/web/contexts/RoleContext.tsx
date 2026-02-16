@@ -26,7 +26,7 @@ interface RoleProviderProps {
 }
 
 export const RoleProvider = ({ children }: RoleProviderProps) => {
-  const [role, setRole] = useState<UserRole>("user");
+  const [role, setRole] = useState<UserRole>("admin");
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
@@ -36,6 +36,8 @@ export const RoleProvider = ({ children }: RoleProviderProps) => {
     ) as UserRole | null;
     if (storedRole && (storedRole === "admin" || storedRole === "user")) {
       setRole(storedRole);
+    } else {
+      localStorage.setItem(ROLE_STORAGE_KEY, "admin");
     }
     setIsLoading(false);
   }, []);

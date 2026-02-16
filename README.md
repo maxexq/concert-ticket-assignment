@@ -123,7 +123,7 @@ docker-compose up -d
 ```
 
 This will start:
-- PostgreSQL on port `5432`
+- PostgreSQL on port `5433`
 - Redis on port `6379`
 
 ### 3. Configure Environment Variables
@@ -138,7 +138,7 @@ Update the values in `.env`:
 
 ```env
 DATABASE_HOST=localhost
-DATABASE_PORT=5432
+DATABASE_PORT=5433
 DATABASE_USERNAME=postgres
 DATABASE_PASSWORD=postgres
 DATABASE_NAME=free_concert_tickets
